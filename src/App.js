@@ -66,8 +66,7 @@ class App extends React.Component {
     state = {
         account: '',
         pBTCAccount: '',
-        tokenBalances: {
-        },
+        tokenBalances: {},
         showTokenBalanceModal: false,
         loadingRedeem: false,
         loadingIssue: false,
@@ -119,14 +118,14 @@ class App extends React.Component {
         return pbtc
     }
 
-    async login(){
+    async login() {
         const provider = await this.web3Modal.connect();
         await this.subscribeProvider(provider);
         const web3 = new Web3(provider);
         const accounts = await web3.eth.getAccounts();
         const address = accounts[0];
         const networkId = await web3.eth.net.getId();
-        if(networkId !== 3){
+        if (networkId !== 3) {
             alert('App works only for Ropsten testnet and BTC testnet');
             return;
         }
@@ -138,11 +137,11 @@ class App extends React.Component {
         await this.updateTokenBalances();
     }
 
-    async logout(){
+    async logout() {
         this.resetApp();
     }
 
-    async subscribeProvider(provider){
+    async subscribeProvider(provider) {
         if (!provider.on) {
             return;
         }
@@ -170,21 +169,21 @@ class App extends React.Component {
         });
     };
 
-    async resetApp(){
+    async resetApp() {
         const {web3} = this.state;
         if (web3 && web3.currentProvider && web3.currentProvider.close) {
             await web3.currentProvider.close();
         }
         await this.web3Modal.clearCachedProvider();
-        this.setState({account: '', web3: '',  pBTCAccount: ''});
+        this.setState({account: '', web3: '', pBTCAccount: ''});
     };
 
-    async updateTokenBalances(){
+    async updateTokenBalances() {
         let tokenBalances = this.state.tokenBalances;
         let tokenMapping = Object.assign({}, depositTokenMapping, redeemaTokenMapping);
         tokenMapping['pBTC'] = pBTCAddress;
         await Object.keys(tokenMapping).map(async (key, index) => {
-            if(key === 'ETH'){
+            if (key === 'ETH') {
                 let balance = await this.state.web3.eth.getBalance(this.state.account);
                 balance = this.state.web3.utils.fromWei(balance);
                 tokenBalances[key] = balance.toString();
@@ -194,10 +193,9 @@ class App extends React.Component {
             let contract = new this.state.web3.eth.Contract(ERC20ABI, address);
             let decimals = await contract.methods.decimals().call();
             let balance = await contract.methods.balanceOf(this.state.account).call();
-            if(decimals === '6'){
+            if (decimals === '6') {
                 balance = this.state.web3.utils.fromWei(balance, "mwei");
-            }
-            else{
+            } else {
                 balance = this.state.web3.utils.fromWei(balance);
             }
             tokenBalances[key] = balance.toString();
@@ -205,11 +203,11 @@ class App extends React.Component {
         });
     }
 
-    openTokenBalanceModal(){
+    openTokenBalanceModal() {
         this.setState({showTokenBalanceModal: true})
     }
 
-    closeTokenBalanceModal(){
+    closeTokenBalanceModal() {
         this.setState({showTokenBalanceModal: false})
     }
 
@@ -218,12 +216,12 @@ class App extends React.Component {
     }
 
     updatepBTCRedeemAmount(value) {
-        if(value === ''){
+        if (value === '') {
             this.setState({pBTCRedeemAmount: value});
             return
         }
         let valid = value.match(/^[+]?(?=.?\d)\d*(\.\d{0,18})?$/);
-        if(!valid){
+        if (!valid) {
             return
         }
         this.setState({pBTCRedeemAmount: value})
@@ -285,17 +283,17 @@ class App extends React.Component {
         await this.updateTokenBalances();
     }
 
-    updateTokenSwapFrom(value){
+    updateTokenSwapFrom(value) {
         this.setState({tokenSwapFrom: value, tokenSwapFromAmount: '', tokenSwapToAmount: ''})
     }
 
-    async updateTokenSwapFromAmount(value){
-        if(value === ''){
+    async updateTokenSwapFromAmount(value) {
+        if (value === '') {
             this.setState({tokenSwapFromAmount: value, tokenSwapToAmount: ''});
             return
         }
         let valid = value.match(/^[+]?(?=.?\d)\d*(\.\d{0,18})?$/);
-        if(!valid){
+        if (!valid) {
             return
         }
         this.setState({tokenSwapFromAmount: value});
@@ -305,77 +303,74 @@ class App extends React.Component {
         let tokenADecimals = await tokenAContract.methods.decimals().call();
         let tokenBContract = new this.state.web3.eth.Contract(ERC20ABI, tokenB);
         let tokenBDecimals = await tokenBContract.methods.decimals().call();
-        if(tokenA.toLowerCase() === tokenB.toLowerCase()){
+        if (tokenA.toLowerCase() === tokenB.toLowerCase()) {
             return
         }
         let factoryContract = new this.state.web3.eth.Contract(UniswapV2Factory, uniswapV2FactoryAddress);
         let pairAddress = await factoryContract.methods.getPair(tokenA, tokenB).call();
-        if(pairAddress === '0x0000000000000000000000000000000000000000'){
+        if (pairAddress === '0x0000000000000000000000000000000000000000') {
             return
         }
         let pairContract = new this.state.web3.eth.Contract(UniswapV2Pair, pairAddress);
         const token0Address = await pairContract.methods.token0().call();
         let reserves = await pairContract.methods.getReserves().call();
         let amountIn;
-        try{
-            if(tokenADecimals === '6') {
+        try {
+            if (tokenADecimals === '6') {
                 amountIn = this.state.web3.utils.toWei(value, "mwei");
-            }
-            else{
+            } else {
                 amountIn = this.state.web3.utils.toWei(value, "ether");
             }
-        }catch(e){
+        } catch (e) {
             return
         }
         let amountInWithFee = this.state.web3.utils.toBN(amountIn).mul(this.state.web3.utils.toBN(997));
         let reserveIn;
         let reserveOut;
-        if(tokenA.toLowerCase() === token0Address.toLowerCase()){
+        if (tokenA.toLowerCase() === token0Address.toLowerCase()) {
             reserveIn = reserves['reserve0'];
             reserveOut = reserves['reserve1'];
-        }
-        else{
+        } else {
             reserveIn = reserves['reserve1'];
             reserveOut = reserves['reserve0'];
         }
         let numerator = this.state.web3.utils.toBN(amountInWithFee).mul(this.state.web3.utils.toBN(reserveOut));
         let denominator = this.state.web3.utils.toBN(reserveIn).mul(this.state.web3.utils.toBN(1000)).add(amountInWithFee);
         let amountOut = numerator.div(denominator);
-        if(tokenBDecimals === '6') {
+        if (tokenBDecimals === '6') {
             amountOut = this.state.web3.utils.fromWei(amountOut, "mwei").toString();
-        }
-        else {
+        } else {
             amountOut = this.state.web3.utils.fromWei(amountOut, "ether").toString();
         }
         this.setState({tokenSwapToAmount: amountOut});
     }
 
-    updateTokenSwapTo(value){
+    updateTokenSwapTo(value) {
         this.setState({tokenSwapTo: value, tokenSwapFromAmount: '', tokenSwapToAmount: ''})
     }
 
-    updateTokenSwapToAmount(value){
-        if(value === ''){
+    updateTokenSwapToAmount(value) {
+        if (value === '') {
             this.setState({tokenSwapToAmount: value});
             return
         }
         let valid = value.match(/^[+]?(?=.?\d)\d*(\.\d{0,18})?$/);
-        if(!valid){
+        if (!valid) {
             return
         }
         this.setState({tokenSwapToAmount: value})
     }
 
-    async swap(){
+    async swap() {
         let tokenA = this.state.tokenSwapFrom;
         let tokenB = this.state.tokenSwapTo;
-        if(tokenA.toLowerCase() === tokenB.toLowerCase()){
+        if (tokenA.toLowerCase() === tokenB.toLowerCase()) {
             alert('Both the tokens cannot be same');
             return
         }
         let tokenAAmount = this.state.tokenSwapFromAmount;
         let tokenBAmount = this.state.tokenSwapToAmount;
-        if(tokenAAmount === '' || tokenBAmount === ''){
+        if (tokenAAmount === '' || tokenBAmount === '') {
             alert('Amount cannot be empty');
             return
         }
@@ -388,8 +383,7 @@ class App extends React.Component {
             } else {
                 tokenAAmount = this.state.web3.utils.toWei(tokenAAmount, "ether");
             }
-        }
-        catch(e){
+        } catch (e) {
             alert('Only ' + tokenADecimals + " decimals are allowed for From token");
             this.setState({loadingSwap: false});
             return
@@ -402,15 +396,14 @@ class App extends React.Component {
             } else {
                 tokenBAmount = this.state.web3.utils.toWei(tokenBAmount, "ether");
             }
-        }
-        catch(e){
+        } catch (e) {
             alert('Only ' + tokenBDecimals + " decimals are allowed for To token");
             this.setState({loadingSwap: false});
             return
         }
         let factoryContract = new this.state.web3.eth.Contract(UniswapV2Factory, uniswapV2FactoryAddress);
         let pairAddress = await factoryContract.methods.getPair(tokenA, tokenB).call();
-        if(pairAddress === '0x0000000000000000000000000000000000000000'){
+        if (pairAddress === '0x0000000000000000000000000000000000000000') {
             alert('Liquidity for the trading pair does not exist. Try conversions between pBTC ⇄ ERC20 pairs');
             this.setState({loadingSwap: false});
             return
@@ -436,8 +429,7 @@ class App extends React.Component {
                 let WETHContract = new this.state.web3.eth.Contract(WETH, WETHAddress);
                 await WETHContract.methods.withdraw(tokenBAmount).send({from: this.state.account});
             }
-        }
-        catch(e){
+        } catch (e) {
             console.log(e);
             alert('Token Swap failed');
         }
@@ -445,39 +437,39 @@ class App extends React.Component {
         this.setState({loadingSwap: false});
     }
 
-    updateTokenDepositAddress(value){
+    updateTokenDepositAddress(value) {
         this.setState({tokenDepositAddress: value})
     }
 
-    updateTokenDepositAmount(value){
-        if(value === ''){
+    updateTokenDepositAmount(value) {
+        if (value === '') {
             this.setState({tokenDepositAmount: value});
             return
         }
         let valid = value.match(/^[+]?(?=.?\d)\d*(\.\d{0,18})?$/);
-        if(!valid){
+        if (!valid) {
             return
         }
         this.setState({tokenDepositAmount: value})
     }
 
-    updateaTokenRedeemAddress(value){
+    updateaTokenRedeemAddress(value) {
         this.setState({aTokenRedeemAddress: value})
     }
 
-    updateaTokenRedeemAmount(value){
-        if(value === ''){
+    updateaTokenRedeemAmount(value) {
+        if (value === '') {
             this.setState({aTokenRedeemAmount: value});
             return
         }
         let valid = value.match(/^[+]?(?=.?\d)\d*(\.\d{0,18})?$/);
-        if(!valid){
+        if (!valid) {
             return
         }
         this.setState({aTokenRedeemAmount: value})
     }
 
-    async depositToken(){
+    async depositToken() {
         if (this.state.tokenDepositAmount === '') {
             return;
         }
@@ -492,8 +484,7 @@ class App extends React.Component {
             } else {
                 amount = this.state.web3.utils.toWei(this.state.tokenDepositAmount, "ether").toString();
             }
-        }
-        catch(e){
+        } catch (e) {
             alert('Only ' + decimals + ' decimals are supported for the token');
             this.setState({loadingTokenDeposit: false});
             return;
@@ -502,7 +493,7 @@ class App extends React.Component {
         const lendingPoolAddressProviderContract = new this.state.web3.eth.Contract(LendingPoolAddressProvider,
             lendingPoolAddressProviderAddress);
         const lendingPoolCoreAddress = await lendingPoolAddressProviderContract.methods.getLendingPoolCore().call();
-        if(tokenAddress.toLowerCase() !== depositTokenMapping['ETH'].toLowerCase()) {
+        if (tokenAddress.toLowerCase() !== depositTokenMapping['ETH'].toLowerCase()) {
             try {
                 await ERC20Contract.methods.approve(lendingPoolCoreAddress, amount).send({from: this.state.account})
             } catch (e) {
@@ -515,10 +506,10 @@ class App extends React.Component {
         const lendingPoolAddress = await lendingPoolAddressProviderContract.methods.getLendingPool().call();
         const lendingPoolContract = new this.state.web3.eth.Contract(LendingPool, lendingPoolAddress);
         try {
-            if(tokenAddress.toLowerCase() !== depositTokenMapping['ETH'].toLowerCase()) {
+            if (tokenAddress.toLowerCase() !== depositTokenMapping['ETH'].toLowerCase()) {
                 await lendingPoolContract.methods.deposit(tokenAddress, amount, referralCode)
                     .send({from: this.state.account});
-            }else{
+            } else {
                 await lendingPoolContract.methods.deposit(tokenAddress, amount, referralCode)
                     .send({from: this.state.account, value: amount});
             }
@@ -530,7 +521,7 @@ class App extends React.Component {
         this.setState({loadingTokenDeposit: false});
     }
 
-    async redeemaToken(){
+    async redeemaToken() {
         if (this.state.aTokenRedeemAmount === '') {
             alert('amount is required');
             return;
@@ -546,16 +537,14 @@ class App extends React.Component {
             } else {
                 amount = this.state.web3.utils.toWei(this.state.aTokenRedeemAmount, "ether").toString();
             }
-        }
-        catch(e){
+        } catch (e) {
             alert('Only ' + decimals + ' decimals are supported for the token');
             this.setState({loadingaTokenRedeem: false});
             return;
         }
         try {
             await contract.methods.redeem(amount).send({from: this.state.account});
-        }
-        catch (e){
+        } catch (e) {
             console.log(e);
             alert('Redeem aTokens failed');
         }
@@ -563,76 +552,76 @@ class App extends React.Component {
         this.setState({loadingaTokenRedeem: false});
     }
 
-    updateStreamToken(value){
+    updateStreamToken(value) {
         this.setState({streamToken: value})
     }
 
-    updateStreamAmount(value){
-         if(value === ''){
+    updateStreamAmount(value) {
+        if (value === '') {
             this.setState({streamAmount: value});
             return
         }
         let valid = value.match(/^[+]?(?=.?\d)\d*(\.\d{0,18})?$/);
-        if(!valid){
+        if (!valid) {
             return
         }
         this.setState({streamAmount: value})
     }
 
-    updateStreamRecipient(value){
+    updateStreamRecipient(value) {
         this.setState({streamRecipient: value})
     }
 
-    updateStreamStartTime(value){
+    updateStreamStartTime(value) {
         this.setState({streamStartTime: value})
     }
 
-     updateStreamStopTime(value){
+    updateStreamStopTime(value) {
         this.setState({streamStopTime: value})
     }
 
-    updateStreamWithdrawAmount(value){
-         if(value === ''){
+    updateStreamWithdrawAmount(value) {
+        if (value === '') {
             this.setState({streamWithdrawAmount: value});
             return
         }
         let valid = value.match(/^[+]?(?=.?\d)\d*(\.\d{0,18})?$/);
-        if(!valid){
+        if (!valid) {
             return
         }
         this.setState({streamWithdrawAmount: value})
     }
 
-    updateWithdrawStreamId(value){
-        if(value === ''){
+    updateWithdrawStreamId(value) {
+        if (value === '') {
             this.setState({withdrawStreamId: value});
             return
         }
         let valid = value.match(/^\d+$/);
-        if(!valid){
+        if (!valid) {
             return
         }
         this.setState({withdrawStreamId: value})
     }
 
-    async createStream(){
+    async createStream() {
         let amount = this.state.streamAmount;
         let recipient = this.state.streamRecipient;
         let startTime = this.state.streamStartTime;
         let stopTime = this.state.streamStopTime;
         let tokenAddress = this.state.streamToken;
-        if(amount === '' || recipient === '' || startTime === '' || stopTime === '' || tokenAddress === ''){
+        if (amount === '' || recipient === '' || startTime === '' || stopTime === '' || tokenAddress === '') {
             return
         }
         startTime = startTime.unix();
         stopTime = stopTime.unix();
         let date = new Date();
         let seconds = Math.round(date.getTime() / 1000);
-        if(startTime - seconds < 300){
+        if (startTime - seconds < 300) {
             alert('Start time should be at least 5 minutes in future');
             return
         }
-        if(stopTime - startTime < 60 * 60){
+        if (stopTime - startTime < 60 * 60) {
             alert('The stream should last atleast for an hour');
             return
         }
@@ -645,26 +634,24 @@ class App extends React.Component {
             } else {
                 amount = this.state.web3.utils.toWei(amount, "ether");
             }
-        }
-        catch(e){
+        } catch (e) {
             alert('Only ' + decimals + ' decimals are supported for the selected token');
             this.setState({loadingCreateStream: false});
             return
         }
         let mod = (amount % (stopTime - startTime));
-        if(mod !== 0){
+        if (mod !== 0) {
             let updatedStreamAmount;
-            if(decimals === '6') {
-               updatedStreamAmount = amount - mod;
-               if(updatedStreamAmount === 0){
-                   updatedStreamAmount = stopTime - startTime;
-               }
-               updatedStreamAmount = this.state.web3.utils.fromWei(updatedStreamAmount.toString(), "mwei").toString();
-            }
-            else{
+            if (decimals === '6') {
                 updatedStreamAmount = amount - mod;
-                if(updatedStreamAmount === 0){
-                   updatedStreamAmount = stopTime - startTime;
+                if (updatedStreamAmount === 0) {
+                    updatedStreamAmount = stopTime - startTime;
+                }
+                updatedStreamAmount = this.state.web3.utils.fromWei(updatedStreamAmount.toString(), "mwei").toString();
+            } else {
+                updatedStreamAmount = amount - mod;
+                if (updatedStreamAmount === 0) {
+                    updatedStreamAmount = stopTime - startTime;
                 }
                 updatedStreamAmount = this.state.web3.utils.fromWei(updatedStreamAmount.toString(), "ether").toString();
             }
@@ -695,10 +682,10 @@ class App extends React.Component {
         this.setState({loadingCreateStream: false});
     }
 
-    async withdrawStream(){
+    async withdrawStream() {
         let streamId = this.state.withdrawStreamId;
         let streamWithdrawAmount = this.state.streamWithdrawAmount;
-        if(streamId === '' || streamWithdrawAmount === ''){
+        if (streamId === '' || streamWithdrawAmount === '') {
             alert('All fields are required');
             return
         }
@@ -707,8 +694,7 @@ class App extends React.Component {
         let stream;
         try {
             stream = await sablierContract.methods.getStream(streamId).call();
-        }
-        catch(e){
+        } catch (e) {
             alert('Either Stream does not exist or amount is already withdrawn from stream');
             this.setState({loadingWithdrawStream: false});
             return;
@@ -726,13 +712,12 @@ class App extends React.Component {
                 streamWithdrawAmount = this.state.web3.utils.toWei(streamWithdrawAmount, "ether").toString();
                 remainingBalanceHuman = this.state.web3.utils.fromWei(stream['remainingBalance'], "ether").toString();
             }
-        }
-        catch(e){
+        } catch (e) {
             alert('Only ' + decimals + ' decimals are supported for the stream token');
             this.setState({loadingWithdrawStream: false});
             return
         }
-        if(streamWithdrawAmount > remainingBalance){
+        if (streamWithdrawAmount > remainingBalance) {
             alert('Withdraw from Stream Failed since stream balance is ' + remainingBalanceHuman);
             this.setState({loadingWithdrawStream: false});
             return;
@@ -748,13 +733,13 @@ class App extends React.Component {
     }
 
     async componentWillMount() {
-        if (this.web3Modal.cachedProvider){
+        if (this.web3Modal.cachedProvider) {
             this.login();
         }
     }
 
     render() {
-        if(this.state.account === ''){
+        if (this.state.account === '') {
             return (
                 <div className="panel-landing  h-100 d-flex" id="section-1">
                     <nav className="container">
@@ -779,7 +764,8 @@ class App extends React.Component {
                             <p className="h6" style={{marginTop: "10px"}}>
                                 pBTC can be redeemed for Bitcoin anytime
                             </p>
-                            <Image src="https://siasky.net/GAATYiTwoe_0weTFzWHXoPEnuwaAjqrGasRPWENsLbT4mg" style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+                            <Image src="https://siasky.net/GAATYiTwoe_0weTFzWHXoPEnuwaAjqrGasRPWENsLbT4mg"
+                                   style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                         </div>
                     </div>
@@ -792,7 +778,8 @@ class App extends React.Component {
                             <p className="h6" style={{marginTop: "10px"}}>
                                 Swap pBTC to ERC20 tokens like WBTC, DAI, USDT, etc. (Powered by Uniswap V2)
                             </p>
-                            <Image src="https://siasky.net/MAAdsCwzqGpkpqiNwi3RrOSrp8tL-ixwweyv6mGfDF-J5g" style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+                            <Image src="https://siasky.net/MAAdsCwzqGpkpqiNwi3RrOSrp8tL-ixwweyv6mGfDF-J5g"
+                                   style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                         </div>
                     </div>
@@ -811,7 +798,8 @@ class App extends React.Component {
                             <p className="h6" style={{marginTop: "10px"}}>
                                 aTokens can be redeemed to get Tokens back anytime
                             </p>
-                            <Image src="https://siasky.net/dAB9Z03zG4it4AA-vKbxh77O5_cFMAI7efhU8GjNtKZq7Q" style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+                            <Image src="https://siasky.net/dAB9Z03zG4it4AA-vKbxh77O5_cFMAI7efhU8GjNtKZq7Q"
+                                   style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                         </div>
                     </div>
@@ -827,7 +815,8 @@ class App extends React.Component {
                             <p className="h6" style={{marginTop: "10px"}}>
                                 Redeem tokens from stream in a single click
                             </p>
-                            <Image src="https://siasky.net/BADxGMd7KvW-2dUR5TSYnSs9hd3y4qsbZIAtNaBcFd0CAw" style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+                            <Image src="https://siasky.net/BADxGMd7KvW-2dUR5TSYnSs9hd3y4qsbZIAtNaBcFd0CAw"
+                                   style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                         </div>
                     </div>
@@ -858,7 +847,8 @@ class App extends React.Component {
                                     Other token balances
                                 </Button>
                             </div>
-                            <Modal show={this.state.showTokenBalanceModal} onHide={this.closeTokenBalanceModal.bind(this)}>
+                            <Modal show={this.state.showTokenBalanceModal}
+                                   onHide={this.closeTokenBalanceModal.bind(this)}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Other Token Balances</Modal.Title>
                                 </Modal.Header>
@@ -930,10 +920,9 @@ class App extends React.Component {
                                     <option value={pBTCAddress}>pBTC</option>
                                     {
                                         Object.keys(depositTokenMapping).map((key, index) => {
-                                            if(key === 'ETH'){
+                                            if (key === 'ETH') {
                                                 return <option value={WETHAddress}>{key}</option>
-                                            }
-                                            else {
+                                            } else {
                                                 return <option value={depositTokenMapping[key]}>{key}</option>
                                             }
                                         })
@@ -953,10 +942,9 @@ class App extends React.Component {
                                     <option value={pBTCAddress}>pBTC</option>
                                     {
                                         Object.keys(depositTokenMapping).map((key, index) => {
-                                            if(key === 'ETH'){
+                                            if (key === 'ETH') {
                                                 return <option value={WETHAddress}>{key}</option>
-                                            }
-                                            else {
+                                            } else {
                                                 return <option value={depositTokenMapping[key]}>{key}</option>
                                             }
                                         })
@@ -968,15 +956,15 @@ class App extends React.Component {
                                        onChange={e => this.updateTokenSwapToAmount(e.target.value)}/>
                             </div>
                             <Button variant="primary btn" onClick={this.swap.bind(this)}
-                                        loading={this.state.loadingSwap}
-                                >Swap</Button>
+                                    loading={this.state.loadingSwap}
+                            >Swap</Button>
                             <br/>
                             <br/>
 
 
                             <h5>Deposit Tokens to earn interest using aTokens</h5>
                             <div>
-                                <select className="form-control"  style={{marginBottom: "10px"}}
+                                <select className="form-control" style={{marginBottom: "10px"}}
                                         value={this.state.tokenDepositAddress}
                                         onChange={e => this.updateTokenDepositAddress(e.target.value)}>
                                     {
@@ -1001,7 +989,7 @@ class App extends React.Component {
 
                             <h5>Redeem aTokens to get Tokens</h5>
                             <div>
-                                <select className="form-control"  style={{marginBottom: "10px"}}
+                                <select className="form-control" style={{marginBottom: "10px"}}
                                         value={this.state.aTokenRedeemAddress}
                                         onChange={e => this.updateaTokenRedeemAddress(e.target.value)}>
                                     {
@@ -1017,7 +1005,8 @@ class App extends React.Component {
                                        onChange={e => this.updateaTokenRedeemAmount(e.target.value)}/>
                             </div>
                             <div>
-                                <Button variant="primary btn" onClick={this.redeemaToken.bind(this)} style={{marginTop: "10px"}}
+                                <Button variant="primary btn" onClick={this.redeemaToken.bind(this)}
+                                        style={{marginTop: "10px"}}
                                         loading={this.state.loadingaTokenRedeem}
                                 >Redeem aTokens</Button>
                             </div>
@@ -1052,10 +1041,14 @@ class App extends React.Component {
                                        onChange={e => this.updateStreamAmount(e.target.value)}/>
                             </div>
                             <div style={{marginBottom: "10px"}}>
-                               <Datetime inputProps={{ placeholder: 'Start Time' }} onChange={value => this.updateStreamStartTime(value)} value = {this.state.streamStartTime} />
+                                <Datetime inputProps={{placeholder: 'Start Time'}}
+                                          onChange={value => this.updateStreamStartTime(value)}
+                                          value={this.state.streamStartTime}/>
                             </div>
                             <div style={{marginBottom: "10px"}}>
-                                <Datetime inputProps={{ placeholder: 'Stop Time' }} onChange={value => this.updateStreamStopTime(value)} value = {this.state.streamStopTime}/>
+                                <Datetime inputProps={{placeholder: 'Stop Time'}}
+                                          onChange={value => this.updateStreamStopTime(value)}
+                                          value={this.state.streamStopTime}/>
                             </div>
                             <div style={{marginBottom: "10px"}}>
                                 <input className="form-control" type="text" placeholder="Recipient Address"
@@ -1086,7 +1079,7 @@ class App extends React.Component {
                                        value={this.state.streamWithdrawAmount}
                                        onChange={e => this.updateStreamWithdrawAmount(e.target.value)}/>
                             </div>
-                             <div style={{marginBottom: "5px"}}>
+                            <div style={{marginBottom: "5px"}}>
                                 <Button variant="primary btn" onClick={this.withdrawStream.bind(this)}
                                         loading={this.state.loadingWithdrawStream}
                                 >Withdraw</Button>
