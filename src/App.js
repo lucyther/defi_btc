@@ -764,7 +764,7 @@ class App extends React.Component {
                             <p className="h6" style={{marginTop: "10px"}}>
                                 pBTC can be redeemed for Bitcoin anytime
                             </p>
-                            <Image src="https://siasky.net/GAATYiTwoe_0weTFzWHXoPEnuwaAjqrGasRPWENsLbT4mg"
+                            <Image src="/ptokens.jpg"
                                    style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                         </div>
@@ -778,7 +778,7 @@ class App extends React.Component {
                             <p className="h6" style={{marginTop: "10px"}}>
                                 Swap pBTC to ERC20 tokens like WBTC, DAI, USDT, etc. (Powered by Uniswap V2)
                             </p>
-                            <Image src="https://siasky.net/MAAdsCwzqGpkpqiNwi3RrOSrp8tL-ixwweyv6mGfDF-J5g"
+                            <Image src="/uniswap.jpg"
                                    style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                         </div>
@@ -798,7 +798,7 @@ class App extends React.Component {
                             <p className="h6" style={{marginTop: "10px"}}>
                                 aTokens can be redeemed to get Tokens back anytime
                             </p>
-                            <Image src="https://siasky.net/dAB9Z03zG4it4AA-vKbxh77O5_cFMAI7efhU8GjNtKZq7Q"
+                            <Image src="/aave.png"
                                    style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                         </div>
@@ -815,7 +815,7 @@ class App extends React.Component {
                             <p className="h6" style={{marginTop: "10px"}}>
                                 Redeem tokens from stream in a single click
                             </p>
-                            <Image src="https://siasky.net/BADxGMd7KvW-2dUR5TSYnSs9hd3y4qsbZIAtNaBcFd0CAw"
+                            <Image src="/sablier.png"
                                    style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                         </div>
