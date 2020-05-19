@@ -182,24 +182,28 @@ class App extends React.Component {
         let tokenBalances = this.state.tokenBalances;
         let tokenMapping = Object.assign({}, depositTokenMapping, redeemaTokenMapping);
         tokenMapping['pBTC'] = pBTCAddress;
-        await Object.keys(tokenMapping).map(async (key, index) => {
-            if (key === 'ETH') {
-                let balance = await this.state.web3.eth.getBalance(this.state.account);
-                balance = this.state.web3.utils.fromWei(balance);
+        Object.keys(tokenMapping).map(async (key, index) => {
+            try {
+                if (key === 'ETH') {
+                    let balance = await this.state.web3.eth.getBalance(this.state.account);
+                    balance = this.state.web3.utils.fromWei(balance);
+                    tokenBalances[key] = balance.toString();
+                    return
+                }
+                let address = tokenMapping[key];
+                let contract = new this.state.web3.eth.Contract(ERC20ABI, address);
+                let decimals = await contract.methods.decimals().call();
+                let balance = await contract.methods.balanceOf(this.state.account).call();
+                if (decimals === '6') {
+                    balance = this.state.web3.utils.fromWei(balance, "mwei");
+                } else {
+                    balance = this.state.web3.utils.fromWei(balance);
+                }
                 tokenBalances[key] = balance.toString();
-                return
+                this.setState({tokenBalances: tokenBalances});
+            } catch(e){
+
             }
-            let address = tokenMapping[key];
-            let contract = new this.state.web3.eth.Contract(ERC20ABI, address);
-            let decimals = await contract.methods.decimals().call();
-            let balance = await contract.methods.balanceOf(this.state.account).call();
-            if (decimals === '6') {
-                balance = this.state.web3.utils.fromWei(balance, "mwei");
-            } else {
-                balance = this.state.web3.utils.fromWei(balance);
-            }
-            tokenBalances[key] = balance.toString();
-            this.setState({tokenBalances: tokenBalances});
         });
     }
 
@@ -476,7 +480,12 @@ class App extends React.Component {
         let tokenAddress = this.state.tokenDepositAddress;
         this.setState({loadingTokenDeposit: true});
         const ERC20Contract = new this.state.web3.eth.Contract(ERC20ABI, tokenAddress);
-        const decimals = await ERC20Contract.methods.decimals().call();
+        let decimals;
+        try {
+            decimals = await ERC20Contract.methods.decimals().call();
+        } catch(e) {
+            decimals = "18";
+        }
         let amount;
         try {
             if (decimals === '6') {
@@ -642,23 +651,24 @@ class App extends React.Component {
         let mod = (amount % (stopTime - startTime));
         if (mod !== 0) {
             let updatedStreamAmount;
+            let updatedStreamAmountHuman;
             if (decimals === '6') {
                 updatedStreamAmount = amount - mod;
                 if (updatedStreamAmount === 0) {
                     updatedStreamAmount = stopTime - startTime;
                 }
-                updatedStreamAmount = this.state.web3.utils.fromWei(updatedStreamAmount.toString(), "mwei").toString();
+                updatedStreamAmountHuman = this.state.web3.utils.fromWei(updatedStreamAmount.toString(), "mwei").toString();
             } else {
                 updatedStreamAmount = amount - mod;
                 if (updatedStreamAmount === 0) {
                     updatedStreamAmount = stopTime - startTime;
                 }
-                updatedStreamAmount = this.state.web3.utils.fromWei(updatedStreamAmount.toString(), "ether").toString();
+                updatedStreamAmountHuman = this.state.web3.utils.fromWei(updatedStreamAmount.toString(), "ether").toString();
             }
-            alert("Update Stream Amount to " + updatedStreamAmount.toString() +
-                " to proceed ahead (Sablier Requires amount to be multiple of the difference between stop and start time)");
-            this.setState({loadingCreateStream: false});
-            return
+            alert("Updated Stream Amount to " + updatedStreamAmountHuman +
+                " to proceed ahead (Sablier Requires amount to be a multiple of the difference between stop and start time)");
+            amount = updatedStreamAmount;
+            this.setState({streamAmount: updatedStreamAmountHuman});
         }
         amount = amount.toString();
         const sablierContract = new this.state.web3.eth.Contract(Sablier, sablierAddress);
@@ -706,10 +716,10 @@ class App extends React.Component {
         let decimals = await erc20Contract.methods.decimals().call();
         try {
             if (decimals === '6') {
-                streamWithdrawAmount = this.state.web3.utils.toWei(streamWithdrawAmount, "mwei").toString();
+                streamWithdrawAmount = this.state.web3.utils.toWei(streamWithdrawAmount, "mwei");
                 remainingBalanceHuman = this.state.web3.utils.fromWei(stream['remainingBalance'], "mwei").toString();
             } else {
-                streamWithdrawAmount = this.state.web3.utils.toWei(streamWithdrawAmount, "ether").toString();
+                streamWithdrawAmount = this.state.web3.utils.toWei(streamWithdrawAmount, "ether");
                 remainingBalanceHuman = this.state.web3.utils.fromWei(stream['remainingBalance'], "ether").toString();
             }
         } catch (e) {
@@ -723,7 +733,7 @@ class App extends React.Component {
             return;
         }
         try {
-            await sablierContract.methods.withdrawFromStream(streamId, streamWithdrawAmount).send({from: this.state.account});
+            await sablierContract.methods.withdrawFromStream(streamId, streamWithdrawAmount.toString()).send({from: this.state.account});
         } catch (e) {
             console.log(e);
             alert('Withdraw from Stream Failed');
