@@ -94,7 +94,11 @@ class App extends React.Component {
         streamStopTime: moment().add(70, 'minutes'),
         streamId: '',
         streamWithdrawAmount: '',
-        withdrawStreamId: ''
+        withdrawStreamId: '',
+        sendToken: '',
+        sendAmount: '',
+        sendAddress: '',
+        loadingSend: false
     };
 
     web3Modal = new Web3Modal({
@@ -742,6 +746,67 @@ class App extends React.Component {
         this.setState({loadingWithdrawStream: false});
     }
 
+    updateSendAmount(value){
+        if (value === '') {
+            this.setState({sendAmount: value});
+            return
+        }
+        let valid = value.match(/^[+]?(?=.?\d)\d*(\.\d{0,18})?$/);
+        if (!valid) {
+            return
+        }
+        this.setState({sendAmount: value})
+    }
+
+    updateSendToken(value){
+        this.setState({sendToken: value});
+    }
+
+    updateSendAddress(value){
+        this.setState({sendAddress: value});
+    }
+
+    async sendToken(){
+        let amount = this.state.sendAmount;
+        let sendAddress = this.state.sendAddress;
+        let tokenAddress = this.state.sendToken;
+        if(amount === "" || sendAddress === "" || tokenAddress === ""){
+            alert('Required fields are missing');
+            return
+        }
+        this.setState({loadingSend: true});
+        const ERC20Contract = new this.state.web3.eth.Contract(ERC20ABI, tokenAddress);
+        let decimals;
+        try {
+            decimals = await ERC20Contract.methods.decimals().call();
+        } catch(e) {
+            decimals = "18";
+        }
+        try {
+            if (decimals === '6') {
+                amount = this.state.web3.utils.toWei(amount, "mwei").toString();
+            } else {
+                amount = this.state.web3.utils.toWei(amount, "ether").toString();
+            }
+        } catch (e) {
+            alert('Only ' + decimals + ' decimals are supported for the token');
+            this.setState({loadingSend: false});
+            return;
+        }
+        try {
+            if (tokenAddress.toLowerCase() !== depositTokenMapping['ETH'].toLowerCase()) {
+                await ERC20Contract.methods.transfer(sendAddress, amount).send({from: this.state.account});
+            } else {
+                await this.state.web3.eth.sendTransaction({from: this.state.account, to: sendAddress, value: amount});
+            }
+        } catch (e) {
+            console.log(e);
+            alert('Send Token failed');
+        }
+        await this.updateTokenBalances();
+        this.setState({loadingSend: false});
+    }
+
     async componentWillMount() {
         if (this.web3Modal.cachedProvider) {
             this.login();
@@ -850,7 +915,7 @@ class App extends React.Component {
 
                     <div style={{margin: "20px"}}>
                         <div>
-                            <div><b>Account:</b> {this.state.account}</div>
+                            <div style={{wordWrap: "break-word" }}><b>Account:</b> {this.state.account}</div>
                             <div><b>pBTC Balance:</b> {this.state.tokenBalances['pBTC']}</div>
                             <div>
                                 <Button variant="primary btn-sm" onClick={this.openTokenBalanceModal.bind(this)}>
@@ -1093,6 +1158,41 @@ class App extends React.Component {
                                 <Button variant="primary btn" onClick={this.withdrawStream.bind(this)}
                                         loading={this.state.loadingWithdrawStream}
                                 >Withdraw</Button>
+                            </div>
+                            <br/>
+
+                            <h5>Send Tokens</h5>
+                            <div style={{marginBottom: "10px"}}>
+                                <select className="form-control"
+                                        value={this.state.sendToken}
+                                        onChange={e => this.updateSendToken(e.target.value)}>
+                                    <option value={pBTCAddress}>pBTC</option>
+                                    {
+                                        Object.keys(depositTokenMapping).map((key, index) => {
+                                            return <option value={depositTokenMapping[key]}>{key}</option>
+                                        })
+                                    }
+                                    {
+                                        Object.keys(redeemaTokenMapping).map((key, index) => (
+                                            <option value={redeemaTokenMapping[key]}>{key}</option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+                            <div style={{marginBottom: "10px"}}>
+                                <input className="form-control" type="text" placeholder="Amount"
+                                       value={this.state.sendAmount}
+                                       onChange={e => this.updateSendAmount(e.target.value)}/>
+                            </div>
+                            <div style={{marginBottom: "10px"}}>
+                                <input className="form-control" type="text" placeholder="Ethereum Address"
+                                       value={this.state.sendAddress}
+                                       onChange={e => this.updateSendAddress(e.target.value)}/>
+                            </div>
+                            <div style={{marginBottom: "5px"}}>
+                                <Button variant="primary btn" onClick={this.sendToken.bind(this)}
+                                        loading={this.state.loadingSend}
+                                >Send</Button>
                             </div>
                             <br/>
                         </div>
