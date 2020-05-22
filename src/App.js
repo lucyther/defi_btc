@@ -816,84 +816,89 @@ class App extends React.Component {
     render() {
         if (this.state.account === '') {
             return (
-                <div className="panel-landing  h-100 d-flex" id="section-1">
-                    <nav className="container">
-                        <div>
-                            <h3 style={{float: "left", marginTop: "15px", marginLeft: "15px"}}>DeFi BTC</h3>
-                            <div className="nav-wrapper Container" style={{"float": "right"}}>
-                                <button className="login" onClick={this.login.bind(this)}>
-                                    Connect
-                                </button>
+                <div>
+                    <Navbar bg="primary" variant="dark">
+                        <div style={{width: "90%"}}>
+                            <Navbar.Brand href="/">
+                                <b>DeFi BTC</b>
+                            </Navbar.Brand>
+                        </div>
+                        <Button variant="default btn-sm" onClick={this.login.bind(this)} style={{float: "right"}}>
+                            Connect
+                        </Button>
+                    </Navbar>
+                    <div className="panel-landing  h-100 d-flex" id="section-1">
+                        <div className="container row" style={{marginTop: "50px"}}>
+                            <div className="col l8 m12">
+
+                                <p className="h2">
+                                    Bringing Bitcoin to DeFi
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    Deposit Bitcoin and get equivalent pBTC (Powered by pTokens)
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    pBTC can be redeemed for Bitcoin anytime
+                                </p>
+                                <Image src="/ptokens.jpg"
+                                       style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+
                             </div>
                         </div>
-                    </nav>
-                    <div className="container row" style={{marginTop: "50px"}}>
-                        <div className="col l8 m12">
+                        <div className="container row" style={{marginTop: "30px"}}>
+                            <div className="col l8 m12">
 
-                            <p className="h2">
-                                Bringing Bitcoin to DeFi
-                            </p>
-                            <p className="h6" style={{marginTop: "10px"}}>
-                                Deposit Bitcoin and get equivalent pBTC (Powered by pTokens)
-                            </p>
-                            <p className="h6" style={{marginTop: "10px"}}>
-                                pBTC can be redeemed for Bitcoin anytime
-                            </p>
-                            <Image src="/ptokens.jpg"
-                                   style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+                                <p className="h2">
+                                    Swap pBTC to ERC20 tokens
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    Swap pBTC to ERC20 tokens like WBTC, DAI, USDT, etc. (Powered by Uniswap V2)
+                                </p>
+                                <Image src="/uniswap.jpg"
+                                       style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
+                            </div>
                         </div>
-                    </div>
-                    <div className="container row" style={{marginTop: "30px"}}>
-                        <div className="col l8 m12">
+                        <div className="container row" style={{marginTop: "30px"}}>
+                            <div className="col l8 m12">
 
-                            <p className="h2">
-                                Swap pBTC to ERC20 tokens
-                            </p>
-                            <p className="h6" style={{marginTop: "10px"}}>
-                                Swap pBTC to ERC20 tokens like WBTC, DAI, USDT, etc. (Powered by Uniswap V2)
-                            </p>
-                            <Image src="/uniswap.jpg"
-                                   style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+                                <p className="h2">
+                                    Deposit Tokens to Earn Interest using aTokens
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    Convert pBTC to WBTC and deposit it to Aave to get interest using aWBTC
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    You earn interest for every ethereum block
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    aTokens can be redeemed to get Tokens back anytime
+                                </p>
+                                <Image src="/aave.png"
+                                       style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
+                            </div>
                         </div>
-                    </div>
-                    <div className="container row" style={{marginTop: "30px"}}>
-                        <div className="col l8 m12">
+                        <div className="container row" style={{marginTop: "30px", marginBottom: "40px"}}>
+                            <div className="col l8 m12">
 
-                            <p className="h2">
-                                Deposit Tokens to Earn Interest using aTokens
-                            </p>
-                            <p className="h6" style={{marginTop: "10px"}}>
-                                Convert pBTC to WBTC and deposit it to Aave to get interest using aWBTC
-                            </p>
-                            <p className="h6" style={{marginTop: "10px"}}>
-                                You earn interest for every ethereum block
-                            </p>
-                            <p className="h6" style={{marginTop: "10px"}}>
-                                aTokens can be redeemed to get Tokens back anytime
-                            </p>
-                            <Image src="/aave.png"
-                                   style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+                                <p className="h2">
+                                    Stream Tokens using Sablier
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    Easily Stream tokens like pBTC, WBTC, DAI, Aave Interest Bearing Tokens, etc.
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    Redeem tokens from stream in a single click
+                                </p>
+                                <Image src="/sablier.png"
+                                       style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
+                            </div>
                         </div>
-                    </div>
-                    <div className="container row" style={{marginTop: "30px", marginBottom: "40px"}}>
-                        <div className="col l8 m12">
-
-                            <p className="h2">
-                                Stream Tokens using Sablier
-                            </p>
-                            <p className="h6" style={{marginTop: "10px"}}>
-                                Easily Stream tokens like pBTC, WBTC, DAI, Aave Interest Bearing Tokens, etc.
-                            </p>
-                            <p className="h6" style={{marginTop: "10px"}}>
-                                Redeem tokens from stream in a single click
-                            </p>
-                            <Image src="/sablier.png"
-                                   style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
-
-                        </div>
+                        <br/>
+                        <br/>
+                        <br/>
                     </div>
                 </div>
             )
