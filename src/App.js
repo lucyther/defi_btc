@@ -347,11 +347,13 @@ class App extends React.Component {
         let denominator = this.state.web3.utils.toBN(reserveIn).mul(this.state.web3.utils.toBN(1000)).add(amountInWithFee);
         let amountOut = numerator.div(denominator);
         if (tokenBDecimals === '6') {
-            amountOut = this.state.web3.utils.fromWei(amountOut, "mwei").toString();
+            amountOut = this.state.web3.utils.fromWei(amountOut.toString(), "mwei");
         } else {
-            amountOut = this.state.web3.utils.fromWei(amountOut, "ether").toString();
+            amountOut = this.state.web3.utils.fromWei(amountOut.toString(), "ether");
         }
-        this.setState({tokenSwapToAmount: amountOut});
+        if(value === this.state.tokenSwapFromAmount) {
+            this.setState({tokenSwapToAmount: amountOut});
+        }
     }
 
     updateTokenSwapTo(value) {
