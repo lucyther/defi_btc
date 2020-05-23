@@ -13,7 +13,7 @@ DeFi BTC also allows you to easily Stream tokens like pBTC, WBTC, DAI, Aave Inte
 (Powered by Sablier). You can also redeem tokens from the stream in a single click.
 
 DeFi BTC also allows you to send or receive any ERC-20 Tokens like aDAI, pBTC, DAI, etc. You can also use our 
-open source project to process ERC-20 token payments for aDAI, pBTC, DAI, etc. It is a non custodial solution which 
+[open source project](https://github.com/viraja1/erc_20_payments) to process ERC-20 token payments for aDAI, pBTC, DAI, etc. It is a non custodial solution which 
 allows you to trigger your own purchase flow on transfer confirmation.
 
 ### App Link
