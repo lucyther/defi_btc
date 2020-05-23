@@ -903,7 +903,7 @@ class App extends React.Component {
                                     Send or Receive Payments
                                 </p>
                                 <p className="h6" style={{marginTop: "10px"}}>
-                                    Easily send or receive any ERC-20 Tokens
+                                    Easily send or receive any ERC-20 Tokens like aDAI, pBTC, DAI, etc.
                                 </p>
                                 <p className="h6" style={{marginTop: "10px"}}>
                                     Our open source project allows merchants to process ERC-20 payments on their own
