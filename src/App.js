@@ -205,7 +205,7 @@ class App extends React.Component {
                 }
                 tokenBalances[key] = balance.toString();
                 this.setState({tokenBalances: tokenBalances});
-            } catch(e){
+            } catch (e) {
 
             }
         });
@@ -487,7 +487,7 @@ class App extends React.Component {
         let decimals;
         try {
             decimals = await ERC20Contract.methods.decimals().call();
-        } catch(e) {
+        } catch (e) {
             decimals = "18";
         }
         let amount;
@@ -746,7 +746,7 @@ class App extends React.Component {
         this.setState({loadingWithdrawStream: false});
     }
 
-    updateSendAmount(value){
+    updateSendAmount(value) {
         if (value === '') {
             this.setState({sendAmount: value});
             return
@@ -758,19 +758,19 @@ class App extends React.Component {
         this.setState({sendAmount: value})
     }
 
-    updateSendToken(value){
+    updateSendToken(value) {
         this.setState({sendToken: value});
     }
 
-    updateSendAddress(value){
+    updateSendAddress(value) {
         this.setState({sendAddress: value});
     }
 
-    async sendToken(){
+    async sendToken() {
         let amount = this.state.sendAmount;
         let sendAddress = this.state.sendAddress;
         let tokenAddress = this.state.sendToken;
-        if(amount === "" || sendAddress === "" || tokenAddress === ""){
+        if (amount === "" || sendAddress === "" || tokenAddress === "") {
             alert('Required fields are missing');
             return
         }
@@ -779,7 +779,7 @@ class App extends React.Component {
         let decimals;
         try {
             decimals = await ERC20Contract.methods.decimals().call();
-        } catch(e) {
+        } catch (e) {
             decimals = "18";
         }
         try {
@@ -937,7 +937,7 @@ class App extends React.Component {
 
                     <div style={{margin: "20px"}}>
                         <div>
-                            <div style={{wordWrap: "break-word" }}><b>Account:</b> {this.state.account}</div>
+                            <div style={{wordWrap: "break-word"}}><b>Account:</b> {this.state.account}</div>
                             <div><b>pBTC Balance:</b> {this.state.tokenBalances['pBTC']}</div>
                             <div>
                                 <Button variant="primary btn-sm" onClick={this.openTokenBalanceModal.bind(this)}>
