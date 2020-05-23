@@ -907,7 +907,8 @@ class App extends React.Component {
                                     Easily send or receive any ERC-20 Tokens like aDAI, pBTC, DAI, etc.
                                 </p>
                                 <p className="h6" style={{marginTop: "10px"}}>
-                                    Our <a href="https://github.com/viraja1/erc_20_payments">open source project</a> allows merchants to process ERC-20 payments on their own
+                                    Our <a href="https://github.com/viraja1/erc_20_payments" target="_blank">open
+                                    source project</a> allows merchants to process ERC-20 payments on their own
                                 </p>
                                 <Image src="/pay.jpg"
                                        style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
@@ -1220,10 +1221,10 @@ class App extends React.Component {
                             <br/>
                             <h5>Process ERC-20 Token Payments</h5>
                             <div style={{marginBottom: "10px"}}>
-                                Use our <a href="https://github.com/viraja1/erc_20_payments">open source project</a> to
-                                process ERC-20 token payments for aDAI, pBTC, DAI, etc.
-                                It is a non custodial solution which allows you to trigger your own purchase flow on transfer
-                                confirmation.
+                                Use our <a href="https://github.com/viraja1/erc_20_payments" target="_blank">open
+                                source project</a> to process ERC-20 token payments for aDAI, pBTC, DAI, etc.
+                                It is a non custodial solution which allows you to trigger your own purchase flow on
+                                transfer confirmation.
                             </div>
                             <br/>
                             <br/>
