@@ -18,6 +18,7 @@ import Web3Modal from "web3modal";
 import Portis from "@portis/web3";
 
 
+const portisDappId = '8ec2675d-95be-4b16-85ea-88cbe9345e94';
 const pBTCAddress = '0xeb770b1883dcce11781649e8c4f1ac5f4b40c978';
 const uniswapV2FactoryAddress = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f';
 const lendingPoolAddressProviderAddress = '0x1c8756FD2B28e9426CDBDcC7E3c4d64fa9A54728';
@@ -108,7 +109,7 @@ class App extends React.Component {
             portis: {
                 package: Portis, // required
                 options: {
-                    id: "8ec2675d-95be-4b16-85ea-88cbe9345e94" // required
+                    id: portisDappId // required
                 }
             }
         }
@@ -924,7 +925,7 @@ class App extends React.Component {
             <div className="App">
                 <div>
 
-                    <Navbar bg="primary" variant="dark">
+                    <Navbar bg="primary" variant="dark" style={{position: "sticky"}} fixed="top">
                         <div style={{width: "90%"}}>
                             <Navbar.Brand href="/">
                                 <b>DeFi BTC</b>
@@ -1216,6 +1217,15 @@ class App extends React.Component {
                                         loading={this.state.loadingSend}
                                 >Send</Button>
                             </div>
+                            <br/>
+                            <h5>Process ERC-20 Token Payments</h5>
+                            <div style={{marginBottom: "10px"}}>
+                                Use our <a href="https://github.com/viraja1/erc20_payments/">open source project</a> to
+                                process ERC-20 token payments for aDAI, pBTC, DAI, etc.
+                                It is a non custodial solution which allows you to trigger your own purchase flow on transfer
+                                confirmation.
+                            </div>
+                            <br/>
                             <br/>
                         </div>
                     </div>
