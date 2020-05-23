@@ -1220,7 +1220,7 @@ class App extends React.Component {
                             <br/>
                             <h5>Process ERC-20 Token Payments</h5>
                             <div style={{marginBottom: "10px"}}>
-                                Use our <a href="https://github.com/viraja1/erc20_payments/">open source project</a> to
+                                Use our <a href="https://github.com/viraja1/erc_20_payments">open source project</a> to
                                 process ERC-20 token payments for aDAI, pBTC, DAI, etc.
                                 It is a non custodial solution which allows you to trigger your own purchase flow on transfer
                                 confirmation.
