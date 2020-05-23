@@ -866,7 +866,7 @@ class App extends React.Component {
                                     Deposit Tokens to Earn Interest using aTokens
                                 </p>
                                 <p className="h6" style={{marginTop: "10px"}}>
-                                    Convert pBTC to WBTC and deposit it to Aave to get interest using aWBTC
+                                    Convert pBTC to WBTC and deposit it to Aave to earn interest using aWBTC
                                 </p>
                                 <p className="h6" style={{marginTop: "10px"}}>
                                     You earn interest for every ethereum block
@@ -889,9 +889,26 @@ class App extends React.Component {
                                     Easily Stream tokens like pBTC, WBTC, DAI, Aave Interest Bearing Tokens, etc.
                                 </p>
                                 <p className="h6" style={{marginTop: "10px"}}>
-                                    Redeem tokens from stream in a single click
+                                    Redeem Tokens from stream in a single click
                                 </p>
                                 <Image src="/sablier.png"
+                                       style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
+
+                            </div>
+                        </div>
+                        <div className="container row" style={{marginTop: "30px", marginBottom: "40px"}}>
+                            <div className="col l8 m12">
+
+                                <p className="h2">
+                                    Send or Receive Payments
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    Easily send or receive any ERC-20 Tokens
+                                </p>
+                                <p className="h6" style={{marginTop: "10px"}}>
+                                    Our open source project allows merchants to process ERC-20 payments on their own
+                                </p>
+                                <Image src="/pay.jpg"
                                        style={{height: "320px", width: "650px", marginTop: "10px"}} fluid/>
 
                             </div>
