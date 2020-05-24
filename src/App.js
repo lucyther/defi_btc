@@ -96,7 +96,7 @@ class App extends React.Component {
         streamId: '',
         streamWithdrawAmount: '',
         withdrawStreamId: '',
-        sendToken: '',
+        sendToken: pBTCAddress,
         sendAmount: '',
         sendAddress: '',
         loadingSend: false
